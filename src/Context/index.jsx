@@ -2,6 +2,22 @@ import { createContext, useState, useEffect } from "react";
  
 export const ShoppingCartContext = createContext()
 
+export const initializeLocalStorage = () => {
+    const accountInLocalStorage  = localStorage.getItem('account')
+    const signOutInLocalStorage  = localStorage.getItem('singOut')
+    let parsedAccount
+    let parsedSignOut
+
+    if(accountInLocalStorage){
+        parsedAccount = JSON.parse(accountInLocalStorage)
+    } else {
+        parsedAccount = {}
+    }
+    if(signOutInLocalStorage){
+        parsedSignOut = JSON.parse(signOutInLocalStorage)
+    }
+}
+
 export const ShoppingCartProvider = ({children}) => {
     const [count, setCount] = useState(0)
 
@@ -29,7 +45,8 @@ export const ShoppingCartProvider = ({children}) => {
     const [filteredItems, setFilteredItems] = useState(null)
 
      // Get products by search
-     const [searchByTittle, setSearchByTittle] = useState(null)
+     const [searchByTittle, setSearchByTittle] = useState("")
+
 
     useEffect(() => {
     fetch('https://api.escuelajs.co/api/v1/products')
@@ -46,6 +63,11 @@ export const ShoppingCartProvider = ({children}) => {
             setFilteredItems(filteredItemsByTittle(items, searchByTittle))
         }
         },[items, searchByTittle])
+
+
+    const [account, setAccount] = useState({}) 
+
+    const [signOut, setSignOut] = useState(false) 
 
     return(
         <ShoppingCartContext.Provider 
@@ -72,7 +94,10 @@ export const ShoppingCartProvider = ({children}) => {
             setSearchByTittle,
             filteredItems, 
             setFilteredItems,
-            
+            account,
+            setAccount,
+            signOut,
+            setSignOut, 
         }}>
             {children}
         </ShoppingCartContext.Provider>
